@@ -1,0 +1,165 @@
+//*const { sign } = require("crypto");
+const db = require("../models/");
+const com = require("../models/comment.model");
+const Op = db.Sequelize.Op;
+const POST = db.posts;
+
+const auth = require('../middleware/auth');//Récupération du middleware d'authentification//
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { use } = require("bcrypt/promises");
+const { Console } = require("console");
+const { hash } = require("bcrypt");
+const { comments } = require("../models");
+const dov = require('dotenv').config();
+
+exports.createPost = (req, res) => {
+  // Validate request
+  console.log(req.headers.authorization) ; const token = req.headers.authorization.split(' ')[1];//Nous extrayons le token du header Autorisation de la requête entrante contient également le mot-clé Bearer donc la fonction split permet de récupérer tout après l'espace dans le header//
+  const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');//Nous utilisons ensuite la fonction verify pour décoder notre token//
+
+const userId = decodedToken.userId
+
+if(req.file){
+  const photo = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+  const publication = {
+    userId: userId,
+    title: req.body.title,
+    content:req.body.content,
+    image:photo,
+    username:req.auth.username
+  };
+  POST.create(publication)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while creating the Tutorial."
+      });
+    });
+  }else{
+    const publication = {
+      userId: userId,
+      title: req.body.title,
+      content:req.body.content,
+      username:req.auth.username
+    };
+    POST.create(publication)
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while creating the Tutorial."
+        });
+      });
+  }
+};
+
+exports.findAllPublication = (req, res) => {
+  return POST.findAll({
+    include: [db.comments],
+    order: [["id", "DESC"]]
+  }).then((cities) => {
+    res.send(cities);
+  })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving tutorials."
+      });
+    });
+};
+
+exports.findOnePost = (req, res) => {
+  var id = req.params.id;
+  console.log(id);
+  POST.findByPk(id, { include: [db.comments] })
+    .then(data => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find Tutorial with id=${id}.`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Tutorial with id=" + id
+      });
+    });
+};
+
+exports.modifyPost = (req, res) => {
+  var id = req.params.id;
+  POST.findByPk(id)
+    .then(userModif => {
+      console.log(req.auth.isAdmin);
+      if (userModif.userId !== req.auth.userId && req.auth.isAdmin !== true) {
+        return res.status(400).json({ error: "Unauthorized request" });
+      } else {
+        console.log(userModif);
+        if(req.file){
+          const photo = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+        // Create a Tutorial
+          const publication = {
+    userId: req.auth.userId,
+    title: req.body.title,
+    content:req.body.content,
+    image:photo,
+    username:req.auth.username
+  };
+        POST.update(publication, {
+          where: { id: id }
+        });
+        res.send({
+          message: "Tutorial was updated successfully."
+        });
+        
+      }else{
+        const publication = {
+          userId: req.auth.userId,
+          title: req.body.title,
+          content:req.body.content,
+          username:req.body.username,
+          image:null
+        };
+        POST.update(publication, {
+          where: { id: id }
+        });
+        res.send({
+          message: "Tutorial was updated successfully."
+        });
+
+      }
+    }
+    });
+}
+  ;
+
+exports.deletePost = (req, res) => {
+  var id = req.params.id;
+  POST.findByPk(id)
+    .then(userModif => {
+      console.log(id.userId);
+      if (userModif.userId !== req.auth.userId && req.auth.isAdmin !== true) {
+        return res.status(400).json({ error: "Unauthorized request" });
+      } else {
+        // Create a Tutorial
+        db.posts.destroy({
+           where: { id: id },include: [db.comments]
+        });
+        db.comments.destroy({
+          where: { postId: id },
+       });
+        res.send({
+          message: "Tutorial was updated successfully."
+        });
+      }
+    });
+}
+  ;
