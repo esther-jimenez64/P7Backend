@@ -24,7 +24,7 @@ const userId = decodedToken.userId;
     userId: userId,
     content: req.body.content,
     postId:postId,
-    username:req.headers.authorization.username
+    username:req.body.username
   };
   Comment.create(commentario)
     .then(data => {
@@ -62,6 +62,7 @@ exports.modifyComment = (req, res) => {
         // Create a Tutorial
         const commentario = {
           content: req.body.content,
+          username:req.body.username
           
         };
         Comment.update(commentario, {

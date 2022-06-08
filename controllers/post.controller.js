@@ -3,7 +3,7 @@ const db = require("../models/");
 const com = require("../models/comment.model");
 const Op = db.Sequelize.Op;
 const POST = db.posts;
-
+const fs = require('fs');
 const auth = require('../middleware/auth');//Récupération du middleware d'authentification//
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -44,7 +44,7 @@ if(req.file){
       userId: userId,
       title: req.body.title,
       content:req.body.content,
-      username:req.auth.username
+      username:req.body.username
     };
     POST.create(publication)
       .then(data => {
@@ -102,8 +102,29 @@ exports.modifyPost = (req, res) => {
       if (userModif.userId !== req.auth.userId && req.auth.isAdmin !== true) {
         return res.status(400).json({ error: "Unauthorized request" });
       } else {
-        console.log(userModif);
-        if(req.file){
+        
+        if(userModif.image == null ){
+          const photo = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+          const publication = {
+            userId: req.auth.userId,
+            title: req.body.title,
+            content:req.body.content,
+            username:req.body.username,
+            image:photo
+          };
+          POST.update(publication, {
+            where: { id: id }
+          });
+          res.send({
+            message: "Tutorial was updated successfully."
+          });
+       
+        
+      }else{
+        let filenam = userModif.image.split('/images/')[1];//Nous créant une const qui grâce split un tableau de-ci qu'il y a avant l'image dans l'url et après l'image et nous récupérant le 2ᵉ éléments du tableau qui correspond au nom du fichier. //
+        fs.unlink(`images/${filenam}`, () => { //Nous utilisons ensuite la fonction unlink du package fs pour supprimer ce fichier, en lui passant le fichier à supprimer et le callback à exécuter une fois ce fichier supprimé. //
+        })
+      
           const photo = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
         // Create a Tutorial
           const publication = {
@@ -111,23 +132,8 @@ exports.modifyPost = (req, res) => {
     title: req.body.title,
     content:req.body.content,
     image:photo,
-    username:req.auth.username
+    username:req.body.username
   };
-        POST.update(publication, {
-          where: { id: id }
-        });
-        res.send({
-          message: "Tutorial was updated successfully."
-        });
-        
-      }else{
-        const publication = {
-          userId: req.auth.userId,
-          title: req.body.title,
-          content:req.body.content,
-          username:req.body.username,
-          image:null
-        };
         POST.update(publication, {
           where: { id: id }
         });
@@ -149,6 +155,11 @@ exports.deletePost = (req, res) => {
       if (userModif.userId !== req.auth.userId && req.auth.isAdmin !== true) {
         return res.status(400).json({ error: "Unauthorized request" });
       } else {
+        if(req.file){
+        let filenam = userModif.image.split('/images/')[1];//Nous créant une const qui grâce split un tableau de-ci qu'il y a avant l'image dans l'url et après l'image et nous récupérant le 2ᵉ éléments du tableau qui correspond au nom du fichier. //
+        fs.unlink(`images/${filenam}`, () => { //Nous utilisons ensuite la fonction unlink du package fs pour supprimer ce fichier, en lui passant le fichier à supprimer et le callback à exécuter une fois ce fichier supprimé. //
+        })
+      }
         // Create a Tutorial
         db.posts.destroy({
            where: { id: id },include: [db.comments]
