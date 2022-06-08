@@ -57,7 +57,7 @@ exports.modifyComment = (req, res) => {
       const commentid = req.params.commentid
       const isAdmin = decodedToken.isAdmin;
       if (commentModif.userId !== req.auth.userId && isAdmin !== true) {
-        return res.status(400).json({ error: "Unauthorized request" });
+        return res.status(401).json({ error: "Unauthorized request" });
       } else {
         // Create a Tutorial
         const commentario = {
@@ -92,7 +92,7 @@ exports.deleteComment = (req, res) => {
       const commentid = req.params.commentid
       const isAdmin = decodedToken.isAdmin;
       if (commentModif.userId !== req.auth.userId && isAdmin !== true) {
-        return res.status(400).json({ error: "Unauthorized request" });
+        return res.status(401).json({ error: "Unauthorized request" });
       } else {
     
         // Create a Tutorial

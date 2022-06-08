@@ -54,7 +54,7 @@ exports.modify = (req, res) => {
       .then(userModif => {
           console.log(userModif);
           if(userModif.id !== req.auth.userId && req.auth.isAdmin !== true){
-            return res.status(400).json({ error: "Unauthorized request" });
+            return res.status(401).json({ error: "Unauthorized request" });
           }else{
         // Create a
           res.status(200);
@@ -82,7 +82,7 @@ exports.modify = (req, res) => {
       .then(data => {
         console.log(data);
         if(data.id !== req.auth.userId && req.auth.isAdmin !== true){
-          return res.status(400).json({ error: "Unauthorized request" });
+          return res.status(401).json({ error: "Unauthorized request" });
         } else {
           res.send(data)
         }

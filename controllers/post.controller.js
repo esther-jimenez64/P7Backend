@@ -53,7 +53,7 @@ if(req.file){
       .catch(err => {
         res.status(500).send({
           message:
-            err.message || "Some error occurred while creating the Tutorial."
+            err.message || "Some error occurred while creating the POST."
         });
       });
   }
@@ -69,7 +69,7 @@ exports.findAllPublication = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving tutorials."
+          err.message || "Some error occurred while retrieving POSTS."
       });
     });
 };
@@ -83,13 +83,13 @@ exports.findOnePost = (req, res) => {
         res.send(data);
       } else {
         res.status(404).send({
-          message: `Cannot find Tutorial with id=${id}.`
+          message: `Cannot find POST with id=${id}.`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error retrieving Tutorial with id=" + id
+        message: "Error retrieving POST with id=" + id
       });
     });
 };
@@ -100,7 +100,7 @@ exports.modifyPost = (req, res) => {
     .then(userModif => {
       console.log(req.auth.isAdmin);
       if (userModif.userId !== req.auth.userId && req.auth.isAdmin !== true) {
-        return res.status(400).json({ error: "Unauthorized request" });
+        return res.status(401).json({ error: "Unauthorized request" });
       } else {
         
         if(userModif.image == null ){
@@ -116,7 +116,7 @@ exports.modifyPost = (req, res) => {
             where: { id: id }
           });
           res.send({
-            message: "Tutorial was updated successfully."
+            message: "Post was updated successfully."
           });
        
         
@@ -138,7 +138,7 @@ exports.modifyPost = (req, res) => {
           where: { id: id }
         });
         res.send({
-          message: "Tutorial was updated successfully."
+          message: "Post was updated successfully."
         });
 
       }
@@ -153,7 +153,7 @@ exports.deletePost = (req, res) => {
     .then(userModif => {
       console.log(id.userId);
       if (userModif.userId !== req.auth.userId && req.auth.isAdmin !== true) {
-        return res.status(400).json({ error: "Unauthorized request" });
+        return res.status(401).json({ error: "Unauthorized request" });
       } else {
         if(req.file){
         let filenam = userModif.image.split('/images/')[1];//Nous créant une const qui grâce split un tableau de-ci qu'il y a avant l'image dans l'url et après l'image et nous récupérant le 2ᵉ éléments du tableau qui correspond au nom du fichier. //
@@ -168,7 +168,7 @@ exports.deletePost = (req, res) => {
           where: { postId: id },
        });
         res.send({
-          message: "Tutorial was updated successfully."
+          message: "POST was Delete successfully."
         });
       }
     });
