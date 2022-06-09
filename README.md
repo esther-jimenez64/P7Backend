@@ -5,5 +5,5 @@
 (Windows)
 3. Exécutez npm install
 4. Exécutez nodemon server à partir du dossier backend
-5.Créer un dossier images à partir du dossier backend dans le qu'elle seront  stocker les images.
+5.Créer un dossier images à partir du dossier backend dans le qu'elle seront  stocker les images
 6.Installer VueCli 
