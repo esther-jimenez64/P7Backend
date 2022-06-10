@@ -24,6 +24,10 @@ exports.signup = (req, res) => {
     throw "Invalid password";
   };
   const regexPassword = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/; //Regex pour valider le formulaire doit contenir 1 majuscule ////1 caractère spécial et un chiffre//
+  const regexEmail = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/
+  if (!regexEmail.test(req.body.email)) { //Si la regex n'est pas respecté alors non//
+    throw "Invalid email";
+  };
   if (!regexPassword.test(req.body.password)) { //Si la regex n'est pas respecté alors non//
     throw "Invalid password";
   };

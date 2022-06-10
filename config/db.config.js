@@ -1,4 +1,4 @@
-require('dotenv').config(); 
+require('dotenv').config(); /*configuration de ma base de donné mysql */
 const baseDB = process.env.Secret_DB;
 module.exports = {
     HOST: "localhost",

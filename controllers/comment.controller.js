@@ -1,6 +1,6 @@
 
 const db = require("../models/");
-const Op = db.Sequelize.Op;
+
 const POST = db.posts;
 const Comment = db.comments;
 const auth = require('../middleware/auth');//Récupération du middleware d'authentification//

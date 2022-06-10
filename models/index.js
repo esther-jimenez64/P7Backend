@@ -1,9 +1,9 @@
-const dbConfig = require("../config/db.config");
-const path = require('path');
-const Sequelize = require("sequelize");
-const fs = require('fs');
+const dbConfig = require("../config/db.config");/*Récupération de la configuration base de donnée*/
+const path = require('path');/*Récupération module Path qui permet de travailler avec des répertoires et des chemins de fichiers*/
+const Sequelize = require("sequelize");/*Récupération de l'outils ORM pour une prise en charge transactions, des relations,DB mysql */
+const fs = require('fs');//Récupération du module fs fournit de nombreuses fonctionnalités comme fs.unlink pour supprimer des fichiers//
 
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, { /*Configuration de l'instance  sequelize qui représente une connexion à une base de données*/
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
   operatorsAliases: 0,
@@ -13,6 +13,7 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     acquire: dbConfig.pool.acquire,
     idle: dbConfig.pool.idle
   }
+
 });
 
 
@@ -28,22 +29,22 @@ db.comments = require("./comment.model")(sequelize, Sequelize);
 const POST = db.posts;
 
 
-db.users.hasMany(db.posts, {
-  foreignKey: 'userId',
+/*** Assosation  ***/
+db.users.hasMany(db.posts, { /*association une relation un-à-un existe entre users et posts, la clé étrangère étant définie avec */
+  foreignKey: 'userId',      /* foreignKey dans le modèle cible */
 }),
-db.users.hasMany(db.comments, {
-  foreignKey: 'userId',
+db.users.hasMany(db.comments, { /*associatio nune relation un-à-un existe entre users et commments*/
+foreignKey: 'userId',           /* la clé étrangère étant définie avec  foreignKey dans le modèle cible */
 })
-db.posts.belongsTo(db.users, {
-  foreignKey: 'userId',
-  onDelete: 'CASCADE'
+db.posts.belongsTo(db.users, {  /*association une relation un-à-un existe entre posts et users*/
+  foreignKey: 'userId',         /* la clé étrangère étant définie avec  foreignKey dans le modèle source */
+  onDelete: 'CASCADE'           /*configurer les comportements ON DELETE cascade pour suprimer les posts créer par l'user delete*/
 }),
-db.posts.hasMany(db.comments, {
-  foreignKey: 'postId',
-  onDelete: 'CASCADE'
+db.posts.hasMany(db.comments, {  /*association une relation un-à-un existe entre posts et comments*/ 
+  foreignKey: 'postId',          /* la clé étrangère étant définie avec  foreignKey dans le modèle cible */
+  onDelete: 'CASCADE'            /*configurer les comportements ON DELETE cascade pour suprimer les comments du posts delete*/
 })
-
-db.comments.belongsTo(db.users, {
+db.comments.belongsTo(db.users, {  
   foreignKey: 'userId',
   onDelete: 'CASCADE'
 })

@@ -11,9 +11,15 @@ const cors = require('cors');
 const userModifyDelete = newLocal; //Récupération de mes routes user//
 const baseDB = process.env.Secret_DB; //const qui contient l'adresse de ma base de donné//
 const rateLimit = require('express-rate-limit')//récup du package ratelimit qui empêche la même adresse IP de faire trop de demandes qui nous aideront à prévenir les attaques comme la force brute////fonctionnalité très puissante pour sécuriser les API backend contre les attaques malveillantes//
+const limiter = rateLimit({   //Configuration de rate limit//
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 100, // limite chaque IP à 100 requêtes par window de 15min
+  standardHeaders: true, // retourne l'info de limite dans les headers
+  legacyHeaders: false, // désactive le 'X-rateLimit-*' headers
+  skipSuccessfulRequests: true//que les requêtes qui se connecte avec une réusite ne soit pas comptapilisé//
+});
 
 
-//connexion avec mongoose qui gère la base de donnée MongoDB//
 
   
 const app = express();//Appelé à la méthode express//
