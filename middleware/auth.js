@@ -5,12 +5,9 @@ module.exports = (req, res, next) => {//Étant donné que de nombreux problèmes
   console.log(req.headers);
   try {
     const token = req.headers.authorization.split(' ')[1];//Nous extrayons le token du header Autorisation de la requête entrante contient également le mot-clé Bearer donc la fonction split permet de récupérer tout après l'espace dans le header//
-      const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');//Nous utilisons ensuite la fonction verify pour décoder notre token//
-
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');//Nous utilisons ensuite la fonction verify pour décoder notre token//
     const userId = decodedToken.userId; //Nous extrayons l'ID utilisateur de notre token//
-    console.log(userId); 
-    const isAdmin = decodedToken.isAdmin;
-    console.log(isAdmin);
+    const isAdmin = decodedToken.isAdmin;//Nous extrayons la valeur Booléen et l'assignons a la const/
     req.auth = { userId,isAdmin}; //Nous assignons la valeur de la variable  userId  à la clé  userId  de l'objet  auth//
     if (req.body.userId && req.body.userId !== userId && req.body.isAdmin !== isAdmin ) { //Si la demande contient un ID utilisateur, nous le comparons à celui extrait du token. S'ils sont différents, nous générons une erreur //
       throw 'Invalid user ID';

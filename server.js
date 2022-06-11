@@ -1,14 +1,9 @@
 const http = require('http');//importez le package HTTP natif de Node et l'utilisez pour créer un serveur//
 const app = require('./app');//Exécutez l'application Express sur le serveur Node//
-const express = require("express");
-const cors = require("cors");
-const db = require("../backend/models");
-//const app = express();//
-
-
+const express = require("express"); /*Exécutez l'application Express sur le serveur Node*/
+const db = require("../backend/models");/*Récupération des models*/
 db.sequelize.sync();
-app.use(express.urlencoded({ extended: true }));
-// simple route
+app.use(express.urlencoded({ extended: true })); /*Express fournit un middleware pour traiter les données (entrantes) (objet) dans le corps de la requête*/
 const normalizePort = val => { //la fonction normalizePort renvoie un port valide, qu'il soit fourni sous la forme d'un numéro ou d'une chaîne//
   const port = parseInt(val, 10);
 

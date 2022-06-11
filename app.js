@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 
 
 app.use('/images', express.static(path.join(__dirname, 'images'))); // pour éviter une erreur 404. ON va  indiqué à Express qu'il faut gérer la ressource images de manière statique (un sous-répertoire de notre répertoire de base, __dirname ) à chaque fois qu'elle reçoit une requête vers la route /images . Enregistrez et actualisez l'application dans le navigateur// 
-app.use('/api/user', userLoginRegister);
+app.use('/api/user', userLoginRegister);/*méthode use nous lui passons un string, correspondant à la route pour laquelle nous souhaitons enregistrer cet élément de middleware*/
 app.use('/api/user', userModifyDelete);
 app.use('/api/publication', creatPublication);
 app.use('/api/comment', creatComment);
