@@ -34,9 +34,15 @@ exports.modify = (req, res) => {
         USER.update(utilisateur, {  //Ensuite nous mettons à jours l'user et l'envoyons à la base de donnée//
           where: { id: req.params.id}
         })
-        res.send({
-          message: "User was updated successfully."
-        });
+        res.status(200).json({  
+          'username':req.body.username,
+          'userId': req.body.id,
+          'token': jwt.sign(
+            { userId: req.body.id, username: req.body.username },
+            'RANDOM_TOKEN_SECRET',
+            { expiresIn: '24h' }
+          )
+        });;
       })
     })
   };

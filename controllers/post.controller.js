@@ -87,7 +87,6 @@ exports.findOnePost = (req, res) => {
     });
 };
 
-/*Création de la logique de ma route put qui permet de modifier un post spécifique*/
 exports.modifyPost = (req, res) => {
   var id = req.params.id;              //Récupération de l'id  contenu dans params Url//
   POST.findByPk(id)                   //Nous récupérons le post qui  contient cette id//
@@ -96,7 +95,8 @@ exports.modifyPost = (req, res) => {
         return res.status(401).json({ error: "Unauthorized request" });
       } else {
         
-        if(postModif.image == null ){ //si fichier image  n'existe pas dans cas là, nous n'envoyons la nouvelle d'image//
+        if(postModif.image == null ){ //si fichier image  n'existe pas dans cas là, nous n'envoyons la nouvelle d'image//
+          if(req.file){
           const photo = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;//Reconstruire l'URL complète du fichier enregistré.//
           const publication = {      //Création d'un objet contenant le post modifié par l'utilisateur contenue dans la requête//
             userId: req.auth.userId,
@@ -111,13 +111,36 @@ exports.modifyPost = (req, res) => {
           res.send({
             message: "Post was updated successfully."
           });
+        }else{
+          photo =null
+          const publication = {      //Création d'un objet contenant le post modifié par l'utilisateur contenue dans la requête//
+            userId: req.auth.userId,
+            title: req.body.title,
+            content:req.body.content,
+            username:req.body.username,
+            image:photo
+          };
+          POST.update(publication, { //Ensuite, nous créons le post à envoyer à la base de donnée/
+            where: { id: id }
+          });
+          res.send({
+            message: "Post was updated successfully."
+          });
+        }
        
         
       }else{/**si le post contient une image */
         let filenam = postModif.image.split('/images/')[1];//Nous créant une const qui grâce split un tableau de-ci qu'il y a avant l'image dans l'url et après l'image et nous récupérant le 2ᵉ éléments du tableau qui correspond au nom du fichier. //
         fs.unlink(`images/${filenam}`, () => { //Nous utilisons ensuite la fonction unlink du package fs pour supprimer ce fichier, en lui passant le fichier à supprimer et le callback à exécuter une fois ce fichier supprimé. //
         })
-          const photo = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;//Reconstruire l'URL complète du fichier enregistré.//
+        var photo=""
+        if(req.file){
+         photo = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+        }
+        if(req.file === null)
+        { photo = null
+
+        }
           const publication = {            //Création d'un objet contenant le post modifié par l'utilisateur contenue dans la requête//
     userId: req.auth.userId,
     title: req.body.title,
@@ -128,10 +151,9 @@ exports.modifyPost = (req, res) => {
         POST.update(publication, {  //Ensuite, nous créons le post à envoyer à la base de donnée/
           where: { id: id }
         });
-        res.send({
-          message: "Post was updated successfully."
-        });
-
+        res.status(200).json({  
+          postModif
+         });
       }
     }
     });
