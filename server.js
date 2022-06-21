@@ -1,10 +1,13 @@
-const http = require('http');//importez le package HTTP natif de Node et l'utilisez pour créer un serveur//
-const app = require('./app');//Exécutez l'application Express sur le serveur Node//
+const http = require("http"); //importez le package HTTP natif de Node et l'utilisez pour créer un serveur//
+const app = require("./app"); //Exécutez l'application Express sur le serveur Node//
 const express = require("express"); /*Exécutez l'application Express sur le serveur Node*/
-const db = require("../backend/models");/*Récupération des models*/
+const db = require("../backend/models"); /*Récupération des models*/
 db.sequelize.sync();
-app.use(express.urlencoded({ extended: true })); /*Express fournit un middleware pour traiter les données (entrantes) (objet) dans le corps de la requête*/
-const normalizePort = val => { //la fonction normalizePort renvoie un port valide, qu'il soit fourni sous la forme d'un numéro ou d'une chaîne//
+app.use(
+  express.urlencoded({ extended: true })
+); /*Express fournit un middleware pour traiter les données (entrantes) (objet) dans le corps de la requête*/
+const normalizePort = (val) => {
+  //la fonction normalizePort renvoie un port valide, qu'il soit fourni sous la forme d'un numéro ou d'une chaîne//
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -17,21 +20,24 @@ const normalizePort = val => { //la fonction normalizePort renvoie un port valid
 };
 // set port, listen for requests
 
-const port = normalizePort(process.env.PORT || '3000'); // Indiquer à l'app express sur quel port elle doit tourner//
-app.set('port', port);
-const errorHandler = error => { //la fonction errorHandler  recherche les différentes erreurs et les gère de manière appropriée. Elle est ensuite enregistrée dans le serveur//
-  if (error.syscall !== 'listen') { //un écouteur d'évènements est également enregistré, consignant le port ou le canal nommé sur lequel le serveur s'exécute dans la console//
+const port = normalizePort(process.env.PORT || "3000"); // Indiquer à l'app express sur quel port elle doit tourner//
+app.set("port", port);
+const errorHandler = (error) => {
+  //la fonction errorHandler  recherche les différentes erreurs et les gère de manière appropriée. Elle est ensuite enregistrée dans le serveur//
+  if (error.syscall !== "listen") {
+    //un écouteur d'évènements est également enregistré, consignant le port ou le canal nommé sur lequel le serveur s'exécute dans la console//
     throw error;
   }
   const address = server.address();
-  const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + PORT;
+  const bind =
+    typeof address === "string" ? "pipe " + address : "port: " + PORT;
   switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges.');
+    case "EACCES":
+      console.error(bind + " requires elevated privileges.");
       process.exit(1);
       break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use.');
+    case "EADDRINUSE":
+      console.error(bind + " is already in use.");
       process.exit(1);
       break;
     default:
@@ -41,12 +47,12 @@ const errorHandler = error => { //la fonction errorHandler  recherche les diffé
 
 const server = http.createServer(app); // Création du serveur avec méthode creteServer qui reçoit la fonction app//
 
-server.on('error', errorHandler);// appel de la fonction de gestion d'erreur//
-server.on('listening', () => {// écoute du port d'exécution du serveur//
+server.on("error", errorHandler); // appel de la fonction de gestion d'erreur//
+server.on("listening", () => {
+  // écoute du port d'exécution du serveur//
   const address = server.address();
-  const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
-  console.log('Listening on ' + bind);
+  const bind = typeof address === "string" ? "pipe " + address : "port " + port;
+  console.log("Listening on " + bind);
 });
 
-server.listen(port);// Écoute des requêtes envoyées par le port disponible//
-
+server.listen(port); // Écoute des requêtes envoyées par le port disponible//
