@@ -40,7 +40,7 @@ exports.signup = (req, res) => {
       };
       //Nous récupérons un user qui à le même email que l'email dans la database//
       const findEmail = USER.findOne({ where: { email: req.body.email } });
-      if (req.body.email != findEmail) {
+      if (findEmail == 0) {
         //si l'email communiqué est différent que celui de la database//
         USER.create(utilisateur) //Ensuite, nous créons l'user à envoyer à la base de donnée//
           .then((data) => {
@@ -52,10 +52,23 @@ exports.signup = (req, res) => {
                 err.message || "Some error occurred while creating the User.",
             });
           });
+          
       } else {
-        throw "this email is already used";
+        res.status(401).send({
+          message:
+            err.message || "THIS Email is already used",
+        });
       }
-    });
+    
+    })
+      .catch((err) => {
+            res.status(500).send({
+              message:
+                err.message || "Some error occurred while creating the User or the email is already used .",
+            });
+          });
+    ;
+   
 };
 
 // Création de la logique de ma route post qui permet de se connecter à un compte//
