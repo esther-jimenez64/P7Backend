@@ -1,10 +1,11 @@
 require('dotenv').config(); /*configuration de ma base de donné mysql */
-const baseDB = process.env.Secret_DB;
+const passwordDB = process.env.Secret_PASSWORD;
+const secretDB = process.env.SECRET_DB;
 module.exports = {
     HOST: "localhost",
     USER: "root",
-    PASSWORD: baseDB,
-    DB: "groupomania",
+    PASSWORD: passwordDB,
+    DB: secretDB,
     dialect: "mysql",
     pool: {
       max: 5,
