@@ -152,6 +152,7 @@ exports.modifyPost = (req, res) => {
           var photo = "";
           if (req.file) {
             /*si l'user à envoyer une image dans un post ou il avait une image*/
+            let filenam = postModif.image.split("/images/")[1]; //Nous créant une const qui grâce split un tableau de-ci qu'il y a avant l'image dans l'url et après l'image et nous récupérant le 2ᵉ éléments du tableau qui correspond au nom du fichier. //
             fs.unlink(`images/${filenam}`, () => {
               //Nous utilisons ensuite la fonction unlink du package fs pour supprimer ce fichier, en lui passant le fichier à supprimer et le callback à exécuter une fois ce fichier supprimé. //
             });
@@ -191,31 +192,32 @@ exports.deletePost = (req, res) => {
     id
   ) /*Nous recherchons le commentaire dans la base de donnée par l'id*/
     .then((postDelete) => {
-      console.log(id.userId);
+      console.log(postDelete.id);
       if (postDelete.userId !== req.auth.userId && req.auth.isAdmin !== true) {
         /*ID utilisateur de la demande, nous le comparons à celui extrait du token. S'ils sont différents, nous générons une erreur et également si l'user et admin*/
         return res.status(401).json({ error: "Unauthorized request" });
       } else {
-        if (req.file) {
+        if (postDelete.image) {
           /*si fichier image  existe dans cas là*/
-          let filenam = postDelete.image.split("/images/")[1]; //Nous créant une const qui grâce split un tableau de-ci qu'il y a avant l'image dans l'url et après l'image et nous récupérant le 2ᵉ éléments du tableau qui correspond au nom du fichier. //
-          fs.unlink(`images/${filenam}`, () => {
+          let filename = postDelete.image.split("/images/")[1]; //Nous créant une const qui grâce split un tableau de-ci qu'il y a avant l'image dans l'url et après l'image et nous récupérant le 2ᵉ éléments du tableau qui correspond au nom du fichier. //
+          fs.unlink(`images/${filename}`, () => {
             //Nous utilisons ensuite la fonction unlink du package fs pour supprimer ce fichier, en lui passant le fichier à supprimer et le callback à exécuter une fois ce fichier supprimé. //
-          });
-        }
-        // Create a Tutorial
+                // Create a Tutorial
         db.posts.destroy({
           //Ensuite, nous détruisent le commentaire et envoyons à la base de donnée//
-          where: { id: id },
+          where: { id: postDelete.id },
           include: [db.comments], //Ensuite, incluions les comments //
         });
         db.comments.destroy({
           /* et nous détruisent les comments ou le postId et le même que le post supprimer*/
-          where: { postId: id },
+          where: { postId: postDelete.id },
         });
         res.send({
           message: "POST was Delete successfully.",
         });
+          });
+        }
+    
       }
     });
 };
