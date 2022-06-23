@@ -25,50 +25,41 @@ exports.signup = (req, res) => {
     //Si la regex n'est pas respecté alors non//
     throw "Invalid password";
   }
+  //Nous récupérons un user qui à le même email que l'email dans la database//
 
-  //Suite de ma logique une fois que le mot de pass  correspond  à se déclarer plus haut//
-  bcrypt
-    .hash(req.body.password, 10) //Nous appelons la fonction de hachage de bcrypt dans notre mot de passe et lui demandons de saler le mot de passe 10 fois.//
+  USER.findOne({ where: { email: req.body.email } }) //Nous récupérons un user qui à le même id  que l'id dans la database//
+    .then((userEmail) => {
+      if (!userEmail) {
+        //Suite de ma logique une fois que le mot de pass  correspond  à se déclarer plus haut//
+        bcrypt
+          .hash(req.body.password, 10) //Nous appelons la fonction de hachage de bcrypt dans notre mot de passe et lui demandons de saler le mot de passe 10 fois.//
 
-    .then((hash) => {
-      const utilisateur = {
-        //Création d'un objet contenant l'user créé par l'utilisateur contenue dans la requête//
-        username: req.body.username,
-        email: req.body.email,
-        password: hash,
-        isAdmin: req.body.isAdmin,
-      };
-      //Nous récupérons un user qui à le même email que l'email dans la database//
-      const findEmail = USER.findOne({ where: { email: req.body.email } });
-      if (findEmail == 0) {
-        //si l'email communiqué est différent que celui de la database//
-        USER.create(utilisateur) //Ensuite, nous créons l'user à envoyer à la base de donnée//
-          .then((data) => {
-            res.send(data);
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message:
-                err.message || "Some error occurred while creating the User.",
-            });
+          .then((hash) => {
+            const utilisateur = {
+              //Création d'un objet contenant l'user créé par l'utilisateur contenue dans la requête//
+              username: req.body.username,
+              email: req.body.email,
+              password: hash,
+              isAdmin: req.body.isAdmin,
+            };
+
+            //si l'email communiqué est différent que celui de la database//
+            USER.create(utilisateur) //Ensuite, nous créons l'user à envoyer à la base de donnée//
+              .then((data) => {
+                res.send(data);
+              })
+              .catch(() => {
+                res.status(500).send({
+                  message: "Some error occurred while creating the User.",
+                });
+              });
           });
-          
       } else {
         res.status(401).send({
-          message:
-            err.message || "THIS Email is already used",
+          message: "THIS Email is already used",
         });
       }
-    
-    })
-      .catch((err) => {
-            res.status(500).send({
-              message:
-                err.message || "Some error occurred while creating the User or the email is already used .",
-            });
-          });
-    ;
-   
+    });
 };
 
 // Création de la logique de ma route post qui permet de se connecter à un compte//
